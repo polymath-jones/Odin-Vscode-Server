@@ -238,8 +238,12 @@ class ComponentService {
             yield vscode.workspace.findFiles("**/src/**/*.{vue}").then(files => {
                 let componentMap = new Map();
                 files.forEach((file) => __awaiter(this, void 0, void 0, function* () {
+                    /**
+                     *  wrapping algorithms:: wrap components with components as root with div,
+                     * wrap if-else and loop elements with div
+                     */
                     yield vscode.workspace.fs.readFile(file).then(array => {
-                        var _a;
+                        var _a, _b;
                         const templateBlockRegex = /(<template(\s|\S)*<\/template>)/gm;
                         const remXmlns = /[\w]*xmlns(\s|\S)*?"(\s|\S)*?"/gm;
                         let source = array.toString();
@@ -253,17 +257,29 @@ class ComponentService {
                             const tag = elt === null || elt === void 0 ? void 0 : elt.tagName.toLocaleLowerCase();
                             const valid = this.tags.includes(`<${tag}>`);
                             const id = this.generateID();
-                            if (!valid && (elt === null || elt === void 0 ? void 0 : elt.tagName) !== "template") {
-                                elt === null || elt === void 0 ? void 0 : elt.setAttribute("odin-component", "true");
+                            const componentId = this.generateID();
+                            if (i === 1) {
+                                if ((!valid && (elt === null || elt === void 0 ? void 0 : elt.tagName) !== "template")) {
+                                    const wrapper = document.createElement('div');
+                                    (_a = elt === null || elt === void 0 ? void 0 : elt.parentNode) === null || _a === void 0 ? void 0 : _a.appendChild(wrapper);
+                                    wrapper.appendChild(elt);
+                                    wrapper === null || wrapper === void 0 ? void 0 : wrapper.setAttribute("component-id", componentId);
+                                    wrapper === null || wrapper === void 0 ? void 0 : wrapper.setAttribute("odin-component", "true");
+                                }
+                                else {
+                                    elt === null || elt === void 0 ? void 0 : elt.setAttribute("component-id", componentId);
+                                    elt === null || elt === void 0 ? void 0 : elt.setAttribute("odin-component", "true");
+                                }
+                            }
+                            else if (!valid && (elt === null || elt === void 0 ? void 0 : elt.tagName) !== "template") {
+                                elt === null || elt === void 0 ? void 0 : elt.setAttribute("odin-id", id);
                             }
                             else if (valid && (elt === null || elt === void 0 ? void 0 : elt.tagName) !== "template") {
                                 elt === null || elt === void 0 ? void 0 : elt.setAttribute("odin-id", id);
                             }
                         }
-                        if (name.toLocaleLowerCase() !== "app.vue") {
-                            rootid = (_a = children.item(1)) === null || _a === void 0 ? void 0 : _a.getAttribute("odin-id");
-                            componentMap.set(rootid, { uri: file, name: name });
-                        }
+                        rootid = (_b = children.item(1)) === null || _b === void 0 ? void 0 : _b.getAttribute("component-id");
+                        componentMap.set(rootid, { uri: file, name: name });
                         source = source.replace(templateBlockRegex, this.serializer.serializeToString(document));
                         source = source.replace(remXmlns, "");
                         vscode.workspace.fs.writeFile(file, te.encode(source));

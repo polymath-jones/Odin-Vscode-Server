@@ -25,7 +25,7 @@ export class ComponentService {
                 await vscode.workspace.fs.writeFile(componenturi!, te.encode(source));
 
             });
-        }else{
+        } else {
             const te = new TextEncoder();
             let path = await vscode.workspace.findFiles("src/App.vue");
             await vscode.workspace.fs.writeFile(path[0]!, te.encode(source));
@@ -39,7 +39,17 @@ export class ComponentService {
         await vscode.workspace.findFiles("**/src/**/*.{vue}").then(files => {
 
             let componentMap = new Map<string, { uri: vscode.Uri, name: string }>();
+
+
             files.forEach(async file => {
+
+
+                /**
+                 *  wrapping algorithms:: wrap components with components as root with div, 
+                 * wrap if-else and loop elements with div
+                 */
+
+
                 await vscode.workspace.fs.readFile(file).then(array => {
 
                     const templateBlockRegex = /(<template(\s|\S)*<\/template>)/gm;
@@ -48,10 +58,6 @@ export class ComponentService {
                     let source = array.toString();
                     let name = file.toString().split('/').pop()!;
                     let te = new TextEncoder();
-
-
-
-
 
                     let document = this.parser.parseFromString(source.match(templateBlockRegex)![0], 'text/html');
                     let children = document.getElementsByTagNameNS('*', '*');
@@ -64,19 +70,37 @@ export class ComponentService {
                         const tag = elt?.tagName.toLocaleLowerCase()!;
                         const valid = this.tags.includes(`<${tag}>`);
                         const id = this.generateID();
+                        const componentId = this.generateID();
 
-                        if (!valid && elt?.tagName !== "template") {
-                            elt?.setAttribute("odin-component", "true");
+
+                        if (i === 1) {
+
+                            if ((!valid && elt?.tagName !== "template")) {
+
+                                const wrapper = document.createElement('div');
+                                elt?.parentNode?.appendChild(wrapper);
+                                wrapper.appendChild(elt!);
+                                wrapper?.setAttribute("component-id", componentId);
+                                wrapper?.setAttribute("odin-component", "true");
+                            } else {
+                                elt?.setAttribute("component-id", componentId);
+                                elt?.setAttribute("odin-component", "true");
+                            }
+                        }
+                        else if (!valid && elt?.tagName !== "template") {
+                            elt?.setAttribute("odin-id", id);
+
 
                         } else if (valid && elt?.tagName !== "template") {
                             elt?.setAttribute("odin-id", id);
+
                         }
                     }
 
-                    if (name.toLocaleLowerCase() !== "app.vue") {
-                        rootid = children.item(1)?.getAttribute("odin-id")!;
-                        componentMap.set(rootid, { uri: file, name: name });
-                    }
+
+                    rootid = children.item(1)?.getAttribute("component-id")!;
+                    componentMap.set(rootid, { uri: file, name: name });
+
 
 
                     source = source.replace(templateBlockRegex, this.serializer.serializeToString(document));
