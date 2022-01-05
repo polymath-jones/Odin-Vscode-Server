@@ -13,19 +13,19 @@ import { WorkspaceService } from './services/workspaceService';
  * start websocket server and wait for page load event(ControllerService)
  * send response(EmitterService)
  * */
+
 export const myStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 
 export function activate(context: vscode.ExtensionContext) {
 
 	console.log('Congratulations, your extension "ODIN" is now active!');
-
 	const cmdId = 'ODIN.helloWorld';
 
 	context.subscriptions.push(vscode.commands.registerCommand(cmdId, async () => {
 
 		vscode.window.showInformationMessage('ODIN extension successully service started');
 		WorkspaceService.init();
-		myStatusBarItem.text = '⚡ • Odin builder service started • ⚡';
+		myStatusBarItem.text = '⚡ • Odin service running • ⚡';
 
 	}));
 

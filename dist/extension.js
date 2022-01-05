@@ -37,7 +37,7 @@ function activate(context) {
     context.subscriptions.push(vscode.commands.registerCommand(cmdId, () => __awaiter(this, void 0, void 0, function* () {
         vscode.window.showInformationMessage('ODIN extension successully service started');
         workspaceService_1.WorkspaceService.init();
-        exports.myStatusBarItem.text = '⚡ • Odin builder service started • ⚡';
+        exports.myStatusBarItem.text = '⚡ • Odin service running • ⚡';
     })));
     context.subscriptions.push(exports.myStatusBarItem);
     exports.myStatusBarItem.text = '⚡ • Run Odin builder • ⚡';
@@ -238,12 +238,8 @@ class ComponentService {
             yield vscode.workspace.findFiles("**/src/**/*.{vue}").then(files => {
                 let componentMap = new Map();
                 files.forEach((file) => __awaiter(this, void 0, void 0, function* () {
-                    /**
-                     *  wrapping algorithms:: wrap components with components as root with div,
-                     * wrap if-else and loop elements with div
-                     */
-                    yield vscode.workspace.fs.readFile(file).then(array => {
-                        var _a, _b;
+                    yield vscode.workspace.fs.readFile(file).then((array) => __awaiter(this, void 0, void 0, function* () {
+                        var _a, _b, _c, _d, _e, _f;
                         const templateBlockRegex = /(<template(\s|\S)*<\/template>)/gm;
                         const remXmlns = /[\w]*xmlns(\s|\S)*?"(\s|\S)*?"/gm;
                         let source = array.toString();
@@ -252,63 +248,88 @@ class ComponentService {
                         let document = this.parser.parseFromString(source.match(templateBlockRegex)[0], 'text/html');
                         let children = document.getElementsByTagNameNS('*', '*');
                         let rootid = "";
+                        if (((_b = (_a = document.firstElementChild) === null || _a === void 0 ? void 0 : _a.children) === null || _b === void 0 ? void 0 : _b.length) > 1) {
+                            const wrapper = document.createElement('div');
+                            (_c = document.firstElementChild) === null || _c === void 0 ? void 0 : _c.appendChild(wrapper);
+                            let desc = (_d = document.firstElementChild) === null || _d === void 0 ? void 0 : _d.children;
+                            for (let i = 0; i < (desc === null || desc === void 0 ? void 0 : desc.length); i++) {
+                                let elt = desc[i];
+                                wrapper.appendChild(elt);
+                            }
+                            if (name === "App.vue") {
+                                wrapper === null || wrapper === void 0 ? void 0 : wrapper.setAttribute("odin-id", this.generateID());
+                            }
+                            else {
+                                wrapper === null || wrapper === void 0 ? void 0 : wrapper.setAttribute("component-id", this.generateID());
+                                wrapper === null || wrapper === void 0 ? void 0 : wrapper.setAttribute("odin-component", "true");
+                            }
+                        }
                         for (let i = 0; i < children.length; i++) {
                             const elt = children.item(i);
                             const tag = elt === null || elt === void 0 ? void 0 : elt.tagName.toLocaleLowerCase();
                             const valid = this.tags.includes(`<${tag}>`);
                             const id = this.generateID();
                             const componentId = this.generateID();
-                            if (i === 1) {
-                                if ((!valid && (elt === null || elt === void 0 ? void 0 : elt.tagName) !== "template")) {
+                            if (i === 1) { //if root of component file
+                                if ((!valid && (elt === null || elt === void 0 ? void 0 : elt.tagName) !== "template")) { //if root is component
                                     const wrapper = document.createElement('div');
-                                    (_a = elt === null || elt === void 0 ? void 0 : elt.parentNode) === null || _a === void 0 ? void 0 : _a.appendChild(wrapper);
+                                    (_e = elt === null || elt === void 0 ? void 0 : elt.parentNode) === null || _e === void 0 ? void 0 : _e.appendChild(wrapper);
                                     wrapper.appendChild(elt);
-                                    wrapper === null || wrapper === void 0 ? void 0 : wrapper.setAttribute("component-id", componentId);
-                                    wrapper === null || wrapper === void 0 ? void 0 : wrapper.setAttribute("odin-component", "true");
+                                    console.log(name);
+                                    if (name === "App.vue") {
+                                        wrapper === null || wrapper === void 0 ? void 0 : wrapper.setAttribute("odin-id", id);
+                                    }
+                                    else {
+                                        wrapper === null || wrapper === void 0 ? void 0 : wrapper.setAttribute("component-id", componentId);
+                                        wrapper === null || wrapper === void 0 ? void 0 : wrapper.setAttribute("odin-component", "true");
+                                    }
                                 }
                                 else {
-                                    elt === null || elt === void 0 ? void 0 : elt.setAttribute("component-id", componentId);
-                                    elt === null || elt === void 0 ? void 0 : elt.setAttribute("odin-component", "true");
+                                    if (name !== "App.vue") {
+                                        elt === null || elt === void 0 ? void 0 : elt.setAttribute("component-id", componentId);
+                                        elt === null || elt === void 0 ? void 0 : elt.setAttribute("odin-component", "true");
+                                    }
                                 }
                             }
-                            else if (!valid && (elt === null || elt === void 0 ? void 0 : elt.tagName) !== "template") {
-                                elt === null || elt === void 0 ? void 0 : elt.setAttribute("odin-id", id);
-                            }
-                            else if (valid && (elt === null || elt === void 0 ? void 0 : elt.tagName) !== "template") {
+                            else if ((elt === null || elt === void 0 ? void 0 : elt.tagName) !== "template") {
                                 elt === null || elt === void 0 ? void 0 : elt.setAttribute("odin-id", id);
                             }
                         }
-                        rootid = (_b = children.item(1)) === null || _b === void 0 ? void 0 : _b.getAttribute("component-id");
+                        rootid = (_f = children.item(1)) === null || _f === void 0 ? void 0 : _f.getAttribute("component-id");
                         componentMap.set(rootid, { uri: file, name: name });
                         source = source.replace(templateBlockRegex, this.serializer.serializeToString(document));
                         source = source.replace(remXmlns, "");
-                        vscode.workspace.fs.writeFile(file, te.encode(source));
-                    });
-                    this.createConfigFile();
-                    this.createComponentMap(componentMap);
+                        yield vscode.workspace.fs.writeFile(file, te.encode(source));
+                    }));
+                    yield this.createConfigFile();
+                    yield this.createComponentMap(componentMap);
                 }));
             });
             vscode.window.showInformationMessage('Component registeration successfully completed');
         });
     }
     createComponentMap(componentMap) {
-        const json = JSON.stringify(Array.from(componentMap.entries()));
-        const te = new TextEncoder();
-        let root = vscode.workspace.workspaceFolders[0].uri;
-        let configUri = vscode.Uri.joinPath(root, "/component.map.json");
-        vscode.workspace.fs.writeFile(configUri, te.encode(json));
+        return __awaiter(this, void 0, void 0, function* () {
+            const json = JSON.stringify(Array.from(componentMap.entries()));
+            const te = new TextEncoder();
+            let root = vscode.workspace.workspaceFolders[0].uri;
+            let configUri = vscode.Uri.joinPath(root, "/component.map.json");
+            yield vscode.workspace.fs.writeFile(configUri, te.encode(json));
+        });
     }
     createConfigFile() {
-        const config = {
-            version: "0.0.0",
-            framework: "vue",
-            lastRun: this.getDate()
-        };
-        const json = JSON.stringify(config);
-        const te = new TextEncoder();
-        let root = vscode.workspace.workspaceFolders[0].uri;
-        let configUri = vscode.Uri.joinPath(root, "/odin.config.json");
-        vscode.workspace.fs.writeFile(configUri, te.encode(json));
+        return __awaiter(this, void 0, void 0, function* () {
+            const config = {
+                version: "0.0.0",
+                framework: "vue",
+                lastRun: this.getDate()
+            };
+            const json = JSON.stringify(config);
+            const te = new TextEncoder();
+            let root = vscode.workspace.workspaceFolders[0].uri;
+            let configUri = vscode.Uri.joinPath(root, "/odin.config.json");
+            yield vscode.workspace.fs.writeFile(configUri, te.encode(json));
+        });
     }
     generateID() {
         let s4 = () => {
