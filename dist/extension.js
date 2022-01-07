@@ -122,8 +122,7 @@ class WorkspaceService {
                     vscode.window.showInformationMessage('An error occured');
                     extension_1.myStatusBarItem.text = '⚡ • Run Odin builder • ⚡';
                 }
-                else if (((_b = e.exitStatus) === null || _b === void 0 ? void 0 : _b.code) === 0) {
-                }
+                else if (((_b = e.exitStatus) === null || _b === void 0 ? void 0 : _b.code) === 0) { }
                 vscode.window.showInformationMessage("Odin Service has terminated");
                 extension_1.myStatusBarItem.text = '⚡ • Run Odin builder • ⚡';
             }

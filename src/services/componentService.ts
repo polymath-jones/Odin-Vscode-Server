@@ -15,14 +15,17 @@ export class ComponentService {
     async save(id: string, source: string) {
 
         if (id !== "app") {
+
             let root = vscode.workspace.workspaceFolders![0].uri;
             let mapUri = vscode.Uri.joinPath(root, "/component.map.json");
+
             await vscode.workspace.fs.readFile(mapUri).then(async file => {
+
                 const config = new Map<string, { uri: vscode.Uri; name: string; }>(JSON.parse(file.toString()));
                 const componenturi = config.get(id)?.uri;
                 const te = new TextEncoder();
                 await vscode.workspace.fs.writeFile(componenturi!, te.encode(source));
-
+                
             });
         } else {
             const te = new TextEncoder();
@@ -35,7 +38,6 @@ export class ComponentService {
         vscode.window.showInformationMessage('Registering components...');
 
         await vscode.workspace.findFiles("**/src/**/*.{vue}").then(files => {
-
 
             let componentMap = new Map<string, { uri: vscode.Uri, name: string }>();
             files.forEach(async file => {

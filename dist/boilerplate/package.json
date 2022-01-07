@@ -1,33 +1,22 @@
 {
-  "name": "qv-checker",
+  "name": "odin-starter",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "lint": "eslint --ext .ts,vue --ignore-path .gitignore . --fix",
-    "format": "prettier -w -u .",
     "build": "vue-tsc --noEmit && vite build",
-    "serve": "vite preview"
+    "preview": "vite preview"
   },
   "dependencies": {
     "vite-plugin-live-reload": "^2.1.0",
-    "vue": "^3.0.5"
+    "vue": "^3.2.25"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.25.0",
-    "@typescript-eslint/parser": "^4.25.0",
-    "@vitejs/plugin-vue": "^1.2.2",
-    "@vue/compiler-sfc": "^3.0.5",
-    "@vue/eslint-config-prettier": "^6.0.0",
-    "@vue/eslint-config-typescript": "^7.0.0",
+    "@vitejs/plugin-vue": "^2.0.0",
     "autoprefixer": "^10.4.1",
-    "eslint": "^7.27.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-vue": "^7.10.0",
     "postcss": "^8.4.5",
-    "prettier": "^2.3.0",
-    "tailwindcss": "^3.0.9",
-    "typescript": "^4.3.2",
-    "vite": "^2.3.4",
-    "vue-tsc": "^0.0.24"
+    "tailwindcss": "^3.0.11",
+    "typescript": "^4.4.4",
+    "vite": "^2.7.2",
+    "vue-tsc": "^0.29.8"
   }
 }

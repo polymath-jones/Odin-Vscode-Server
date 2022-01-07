@@ -52,9 +52,7 @@ export class WorkspaceService {
                             vscode.window.showInformationMessage('An error occured');
                             myStatusBarItem.text = '⚡ • Run Odin builder • ⚡';
 
-                        } else if(e.exitStatus?.code === 0) {
-                           
-                        }
+                        } else if(e.exitStatus?.code === 0) {}
                         
                         vscode.window.showInformationMessage("Odin Service has terminated");
                         myStatusBarItem.text = '⚡ • Run Odin builder • ⚡';

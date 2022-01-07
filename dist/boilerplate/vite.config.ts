@@ -1,17 +1,11 @@
-import vue from "@vitejs/plugin-vue";
-import { join } from "path";
-import liveReload from "vite-plugin-live-reload";
-import { defineConfig } from "vite";
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import liveReload from 'vite-plugin-live-reload'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), liveReload("**/*.vue", { alwaysReload: true })],
-  resolve: {
-    alias: {
-      "@": join(__dirname, "src"),
-    },
-  },
+  plugins: [vue(),liveReload('**/src/**/*.vue')],
   server: {
-    open: "/app.html",
-  },
-});
+    open: '/app.html'
+  }
+})
