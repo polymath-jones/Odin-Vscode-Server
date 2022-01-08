@@ -16,8 +16,8 @@
 
 ### Getting Started
 -   Prequisites: Vs code & Node
--   Install the extension from the Vs code marketplace fff.io
--   Click on the '⚡ • Run Odin builder • ⚡' button on the status bar
+-   Download Sources and install dependencies. Lanuch Extension in development mode (F5)
+-   Click on the '⚡ • Run Odin builder • ⚡' button on the status bar of development window.
 -   Create new project
 -   Wait for application launch in browser
 
