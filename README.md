@@ -16,8 +16,8 @@
 
 ### Getting Started
 -   Prequisites: Vs code & Node
--   Download Sources and install dependencies. Lanuch Extension in development mode (F5)
--   Click on the '⚡ • Run Odin builder • ⚡' button on the status bar of development window.
+-   Download repo and install dependencies. Launch extension in development mode (F5)
+-   Click on the '⚡ • Run Odin builder • ⚡' button on the status bar in the development window.
 -   Create new project
 -   Wait for application launch in browser
 
