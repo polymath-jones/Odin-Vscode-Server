@@ -1,4 +1,4 @@
-# Odin: Vue js Builder (vs code extension)
+# Odin: Vue js Builder (Vscode extension)
 
 ### About The Project 
 
@@ -15,8 +15,10 @@
 
 
 ### Getting Started
--   Prequisites: Vs code & Node
--   Download repo and install dependencies. Launch extension in development mode (F5)
+-   Prequisites: Vscode & Node
+-   Download repo and open directory in Vscode.
+-   Install dependencies with 'npm i'
+-   Launch extension in development mode (F5)
 -   Click on the '⚡ • Run Odin builder • ⚡' button on the status bar in the development window.
 -   Create new project
 -   Wait for application launch in browser
